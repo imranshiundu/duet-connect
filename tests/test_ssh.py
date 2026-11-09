@@ -11,6 +11,7 @@ from duetconnect.ssh import SshManager, DeviceConfig, SshError
 def test_key_exists_false_when_missing():
     with tempfile.TemporaryDirectory() as tmp:
         cfg = GriotLinkConfig(config_file=Path(tmp) / "nonexistent.cfg")
+        cfg.parser.set("ssh", "key_dir", str(Path(tmp) / "keys"))
         device = cfg.device("phone")
         ssh = SshManager(cfg, device)
         assert ssh.key_exists() is False
@@ -19,6 +20,7 @@ def test_key_exists_false_when_missing():
 def test_generate_key_creates_files():
     with tempfile.TemporaryDirectory() as tmp:
         cfg = GriotLinkConfig(config_file=Path(tmp) / "nonexistent.cfg")
+        cfg.parser.set("ssh", "key_dir", str(Path(tmp) / "keys"))
         device = cfg.device("phone")
         ssh = SshManager(cfg, device)
         key_path = ssh.generate_key()
@@ -33,6 +35,7 @@ def test_generate_key_creates_files():
 def test_generate_key_overwrite_protection():
     with tempfile.TemporaryDirectory() as tmp:
         cfg = GriotLinkConfig(config_file=Path(tmp) / "nonexistent.cfg")
+        cfg.parser.set("ssh", "key_dir", str(Path(tmp) / "keys"))
         device = cfg.device("phone")
         ssh = SshManager(cfg, device)
         ssh.generate_key()
@@ -46,6 +49,7 @@ def test_generate_key_overwrite_protection():
 def test_public_key_returns_text():
     with tempfile.TemporaryDirectory() as tmp:
         cfg = GriotLinkConfig(config_file=Path(tmp) / "nonexistent.cfg")
+        cfg.parser.set("ssh", "key_dir", str(Path(tmp) / "keys"))
         device = cfg.device("phone")
         ssh = SshManager(cfg, device)
         assert ssh.public_key() is None
@@ -58,6 +62,7 @@ def test_public_key_returns_text():
 def test_install_key_interactive_instructions():
     with tempfile.TemporaryDirectory() as tmp:
         cfg = GriotLinkConfig(config_file=Path(tmp) / "nonexistent.cfg")
+        cfg.parser.set("ssh", "key_dir", str(Path(tmp) / "keys"))
         device = cfg.device("phone")
         device.host = "192.168.100.51"
         ssh = SshManager(cfg, device)
@@ -69,7 +74,8 @@ def test_install_key_interactive_instructions():
 
 
 def test_device_config_ssh_args():
-    device = DeviceConfig(nickname="phone", user="u0_a320", host="192.168.100.51", port=8022)
+    device = DeviceConfig(nickname="phone", user="u0_a320",
+                          host="192.168.100.51", port=8022)
     args = device.ssh_args
     assert "-p" in args
     assert "8022" in args

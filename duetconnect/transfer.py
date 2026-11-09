@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from .config import DeviceConfig, Duet ConnectConfig
+from .config import DeviceConfig, GriotLinkConfig
 from .ssh import SshManager
 
 
@@ -43,7 +43,7 @@ def parse_device_path(text: str, local_device: str = "laptop") -> Tuple[str, boo
 class RsyncTransfer:
     """Wrapper around the system rsync binary."""
 
-    def __init__(self, config: Duet ConnectConfig):
+    def __init__(self, config: GriotLinkConfig):
         self.config = config
 
     def _base_cmd(self, spec: TransferSpec, device: Optional[DeviceConfig]) -> List[str]:

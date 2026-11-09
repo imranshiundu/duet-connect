@@ -31,7 +31,7 @@ import argparse
 import sys
 from typing import List, Optional, Tuple
 
-from .config import DEFAULT_CONFIG_FILE, DeviceConfig, Duet ConnectConfig
+from .config import DEFAULT_CONFIG_FILE, DeviceConfig, GriotLinkConfig
 from .health import HealthManager
 from .remote import RemoteManager
 from .ssh import SshManager, SshError
@@ -39,9 +39,9 @@ from .transfer import RsyncTransfer, TransferSpec, parse_device_path
 from .backup import BackupManager
 
 
-class Duet ConnectCLI:
+class GriotLinkCLI:
     def __init__(self, config_file=None):
-        self.config = Duet ConnectConfig(config_file)
+        self.config = GriotLinkConfig(config_file)
         self.health = HealthManager(self.config)
         self.transfer = RsyncTransfer(self.config)
         self.phone = self.config.device("phone")
@@ -274,7 +274,7 @@ class Duet ConnectCLI:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    cli = Duet ConnectCLI()
+    cli = GriotLinkCLI()
     return cli.run(argv)
 
 

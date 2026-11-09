@@ -11,7 +11,7 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from .config import DeviceConfig, Duet ConnectConfig
+from .config import DeviceConfig, GriotLinkConfig
 
 
 class SshError(RuntimeError):
@@ -21,7 +21,7 @@ class SshError(RuntimeError):
 class SshManager:
     """Manage keys, fingerprints, and SSH connections for a device."""
 
-    def __init__(self, config: Duet ConnectConfig, device: DeviceConfig):
+    def __init__(self, config: GriotLinkConfig, device: DeviceConfig):
         self.config = config
         self.device = device
         self.device.identity_file = self.config.key_dir / f"duetconnect_{device.nickname}"

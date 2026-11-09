@@ -70,7 +70,7 @@ class DeviceConfig:
         return args
 
 
-class Duet ConnectConfig:
+class GriotLinkConfig:
     """Load, validate, and persist Duet Connect configuration."""
 
     def __init__(self, config_file: Optional[Path] = None):

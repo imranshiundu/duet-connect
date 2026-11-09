@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from .config import Duet ConnectConfig
+from .config import GriotLinkConfig
 from .ssh import DeviceConfig, SshManager
 from .transfer import RsyncTransfer, TransferSpec
 
@@ -23,7 +23,7 @@ class BackupError(RuntimeError):
 class BackupManager:
     """Coordinate phone backups onto a local (external) destination."""
 
-    def __init__(self, config: Duet ConnectConfig, phone: DeviceConfig):
+    def __init__(self, config: GriotLinkConfig, phone: DeviceConfig):
         self.config = config
         self.phone = phone
         self.transfer = RsyncTransfer(config)

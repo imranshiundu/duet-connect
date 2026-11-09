@@ -58,7 +58,7 @@ def test_rsync_transfer_send_builds_command():
         rt = RsyncTransfer(cfg)
         device = DeviceConfig(nickname="phone", user="u0_a320",
                               host="192.168.100.51", port=8022,
-                              identity_file=Path(tmp / "key"))
+                              identity_file=Path(tmp) / "key")
         # Create a dummy key file so -i is included
         device.identity_file.write_text("dummy")
         spec = TransferSpec(source="./local", destination="phone:/remote/",
