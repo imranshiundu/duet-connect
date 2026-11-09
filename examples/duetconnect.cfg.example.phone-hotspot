@@ -1,0 +1,30 @@
+# Duet Connect — Phone hotspot configuration example
+# Phone creates hotspot; laptop joins it
+# Phone IP is typically 192.168.43.1 on hotspot
+
+[devices]
+phone_user = u0_a320
+phone_port = 8022
+laptop_user = imran
+laptop_port = 22
+discovery_network = 192.168.43.0/24
+
+[paths]
+phone_storage = /storage/emulated/0
+backup_destination = /run/media/imran/GRAVITY/PhoneBackup
+exclude = Android/data/*,Android/obb/*,*.cache,*.tmp,.thumbnails
+
+[ssh]
+key_dir = ~/.ssh/duetconnect
+known_hosts = ~/.ssh/known_hosts
+connect_timeout = 10
+command_timeout = 300
+
+[backup]
+selective_folders = DCIM,Pictures,Movies,Music,Documents,Downloads
+verify_after_backup = true
+history_keep = 5
+
+[logging]
+level = INFO
+file = ~/.config/duetconnect/duetconnect.log

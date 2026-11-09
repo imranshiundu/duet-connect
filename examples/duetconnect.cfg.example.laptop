@@ -1,0 +1,33 @@
+# Duet Connect — Laptop configuration example
+# Copy to ~/.config/duetconnect/duetconnect.cfg and edit for your setup
+
+[devices]
+phone_user = u0_a320
+phone_port = 8022
+laptop_user = imran
+laptop_port = 22
+# Match your Wi-Fi subnet for automatic discovery
+discovery_network = 192.168.100.0/24
+
+[paths]
+# Phone shared storage root (after termux-setup-storage)
+phone_storage = /storage/emulated/0
+# External drive mount point — adjust to your drive
+backup_destination = /run/media/imran/GRAVITY/PhoneBackup
+# Patterns excluded from backup/sync
+exclude = Android/data/*,Android/obb/*,*.cache,*.tmp,.thumbnails
+
+[ssh]
+key_dir = ~/.ssh/duetconnect
+known_hosts = ~/.ssh/known_hosts
+connect_timeout = 10
+command_timeout = 300
+
+[backup]
+selective_folders = DCIM,Pictures,Movies,Music,Documents,Downloads
+verify_after_backup = true
+history_keep = 5
+
+[logging]
+level = INFO
+file = ~/.config/duetconnect/duetconnect.log
