@@ -60,17 +60,30 @@ class RsyncTransfer:
             cmd += ["-e", ssh]
         return cmd
 
+    def _normalize_source(self, spec: TransferSpec) -> str:
+        """Normalize source so rsync copies directory contents, not the dir.
+
+        rsync semantics: 'src/' copies contents; 'src' copies the directory.
+        We ensure a trailing slash for directory-like sources.
+        """
+        source = spec.source
+        # Remote sources: 'host:path/' already copies contents
+        if spec.source_remote:
+            if not source.endswith("/"):
+                source += "/"
+        # Local sources: only add trailing slash if it's an existing directory
+        else:
+            import os
+            if os.path.isdir(source) and not source.endswith("/"):
+                source += "/"
+        return source
+
     def run(self, spec: TransferSpec, source_device: Optional[DeviceConfig],
             dest_device: Optional[DeviceConfig]) -> Tuple[int, str, str]:
         """Execute the rsync. Returns (returncode, stdout, stderr)."""
         cmd = self._base_cmd(spec, source_device or dest_device)
-        cmd.append(spec.source)
+        cmd.append(self._normalize_source(spec))
         cmd.append(spec.destination)
-
-        # Add trailing slash semantics: if source is a directory we want its
-        # contents, so normalize trailing slashes consistently.
-        if spec.source_remote and spec.source.endswith("/"):
-            pass  # rsync handles "host:path/" as contents already
         result = subprocess.run(cmd, capture_output=True, text=True,
                                 timeout=self.config.command_timeout)
         return result.returncode, result.stdout, result.stderr
