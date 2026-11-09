@@ -4,24 +4,36 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install system deps
-        run: sudo apt-get update -y && sudo apt-get install -y rsync openssh-client
-      - name: Install Duet Connect
+          cache: "pip"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y rsync openssh-client python3-pip
+
+      - name: Install GriotLink package
         run: python3 -m pip install -e .
-      - name: Run tests
+
+      - name: Run test suite
         run: python3 -m pytest tests/ -v
-      - name: Lint
+
+      - name: Lint with flake8
         run: |
           python3 -m pip install flake8 black
-          flake8 duetconnect tests || true
-          black --check duetconnect tests || true
+          flake8 duetconnect tests --max-line-length=100 || true
+          black --check duetconnect tests --line-length=100 || true
