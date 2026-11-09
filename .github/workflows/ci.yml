@@ -26,14 +26,19 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y rsync openssh-client python3-pip
 
-      - name: Install GriotLink package
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pytest flake8 black
+
+      - name: Install Duet Connect package
         run: python3 -m pip install -e .
 
       - name: Run test suite
         run: python3 -m pytest tests/ -v
 
       - name: Lint with flake8
-        run: |
-          python3 -m pip install flake8 black
-          flake8 duetconnect tests --max-line-length=100 || true
-          black --check duetconnect tests --line-length=100 || true
+        run: flake8 duetconnect tests --max-line-length=100
+
+      - name: Check formatting with black
+        run: black --check duetconnect tests --line-length=100
