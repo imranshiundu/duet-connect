@@ -129,6 +129,14 @@ class Duet ConnectCLI:
             return 1
         return 0
 
+    def _resolve_device(self, nickname: str) -> DeviceConfig:
+        """Return a DeviceConfig with host resolved via discovery."""
+        device = self.phone if nickname == "phone" else self.laptop
+        host = self._resolve(nickname)
+        if host:
+            device.host = host
+        return device
+
     def _cmd_send(self, args, cli) -> int:
         source, src_remote, src_dev = parse_device_path(args.source)
         dest, dst_remote, dst_dev = parse_device_path(args.destination)
@@ -138,8 +146,8 @@ class Duet ConnectCLI:
         if not dst_remote:
             print("[ERR] destination must be device:path (e.g. phone:~/projects/)")
             return 1
-        device = dst_dev or cli.phone
-        device.host = self._resolve(device.nickname)
+        nickname = dst_dev.nickname if dst_dev else "phone"
+        device = cli._resolve_device(nickname)
         rc, out, err = cli.transfer.send(
             source, dest, device,
             dry_run=args.dry_run, checksum=args.checksum,
@@ -159,8 +167,8 @@ class Duet ConnectCLI:
         if dst_remote:
             print("[ERR] receive requires a local destination")
             return 1
-        device = src_dev or cli.phone
-        device.host = self._resolve(device.nickname)
+        nickname = src_dev.nickname if src_dev else "phone"
+        device = cli._resolve_device(nickname)
         rc, out, err = cli.transfer.receive(
             source, dest, device,
             dry_run=args.dry_run, checksum=args.checksum,
