@@ -4,16 +4,16 @@ from __future__ import annotations
 
 import socket
 import subprocess
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
-from .config import DeviceConfig, Duet ConnectConfig
+from .config import DeviceConfig, GriotLinkConfig
 from .ssh import SshManager
 
 
 class HealthManager:
     """Diagnose the link between laptop and phone."""
 
-    def __init__(self, config: Duet ConnectConfig):
+    def __init__(self, config: GriotLinkConfig):
         self.config = config
 
     def status(self, device: DeviceConfig) -> Tuple[bool, str]:
@@ -27,7 +27,8 @@ class HealthManager:
 
         Best-effort, no root required. Returns IP strings.
         """
-        network = network or self.config.get("devices", "discovery_network", "192.168.100.0/24")
+        network = network or self.config.get("devices", "discovery_network",
+                                             "192.168.100.0/24")
         # Parse a simple /24 CIDR.
         base = network.split("/")[0]
         octets = base.split(".")
@@ -51,6 +52,22 @@ class HealthManager:
                 sock.close()
         return found
 
+    def discover_with_hostnames(self, network: Optional[str] = None,
+                                port: int = 8022) -> List[Tuple[str, str]]:
+        """Discover hosts and attempt reverse DNS lookup.
+
+        Returns list of (ip, hostname) tuples.
+        """
+        ips = self.discover(network, port)
+        results: List[Tuple[str, str]] = []
+        for ip in ips:
+            try:
+                hostname = socket.gethostbyaddr(ip)[0]
+            except (socket.herror, OSError):
+                hostname = "(unknown)"
+            results.append((ip, hostname))
+        return results
+
     def doctor(self, devices: List[DeviceConfig]) -> List[str]:
         """Run a full diagnostic and return human-readable findings."""
         findings: List[str] = []
@@ -69,3 +86,20 @@ class HealthManager:
             tag = "[OK]" if ok else "[FAIL]"
             findings.append(f"{tag} {device.nickname}: {message}")
         return findings
+
+    def check_external_storage(self, mountpoint: str) -> Tuple[bool, str, str]:
+        """Check if an external drive is mounted and writable."""
+        from pathlib import Path
+        path = Path(mountpoint)
+        if not path.exists():
+            return False, "", f"Mount point not found: {mountpoint}"
+        if not path.is_dir():
+            return False, "", f"Not a directory: {mountpoint}"
+        # Test write access
+        test_file = path / ".duetconnect-write-test"
+        try:
+            test_file.touch()
+            test_file.unlink()
+            return True, "", f"Writable: {mountpoint}"
+        except OSError as exc:
+            return False, "", f"Not writable: {mountpoint} ({exc})"
