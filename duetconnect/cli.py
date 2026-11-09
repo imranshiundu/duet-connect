@@ -1,17 +1,28 @@
 """Duet Connect command-line interface.
 
+Two-way Android (Termux) <-> Linux connectivity toolkit.
+
 Commands:
+    duetconnect status           Check phone & laptop connection status
+    duetconnect connect phone    Test SSH to phone (use --setup-keys first time)
+    duetconnect send <local> phone:<remote>   Copy laptop -> phone
+    duetconnect receive phone:<remote> <local> Copy phone -> laptop
+    duetconnect backup [full|selective]       Back up phone to external drive
+    duetconnect sync <left> <right> [--pull|--push]   Two-way folder sync
+    duetconnect battery          Phone battery status
+    duetconnect storage          Phone storage usage
+    duetconnect doctor           Full connection diagnostic
+    duetconnect disconnect       Info on ending SSH sessions
+    duetconnect setup            Generate keys + initial config (first-time)
+
+Examples:
     duetconnect status
-    duetconnect connect phone        (alias: connect laptop)
+    duetconnect connect phone --setup-keys
     duetconnect send ./project phone:~/projects/
     duetconnect receive phone:~/storage/downloads/ ./downloads/
-    duetconnect backup               (full | selective)
-    duetconnect sync <left> <right>  [--pull|--push]
-    duetconnect battery
-    duetconnect storage
+    duetconnect backup selective
+    duetconnect sync ./docs phone:~/storage/documents/ --push --dry-run
     duetconnect doctor
-    duetconnect disconnect
-    duetconnect setup                (generate keys + show install instructions)
 """
 
 from __future__ import annotations
