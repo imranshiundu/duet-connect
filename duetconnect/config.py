@@ -98,6 +98,11 @@ class Duet ConnectConfig:
 
     # ------------------------------------------------------------------ getters
     def get(self, section: str, key: str, fallback: Optional[str] = None) -> str:
+        # Environment variable override: DUETCONNECT_<SECTION>_<KEY>
+        env_key = f"DUETCONNECT_{section.upper()}_{key.upper()}"
+        env_value = os.environ.get(env_key)
+        if env_value is not None:
+            return env_value
         return self.parser.get(section, key, fallback=fallback)
 
     def getint(self, section: str, key: str, fallback: int = 0) -> int:
