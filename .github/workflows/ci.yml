@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install system deps
+        run: sudo apt-get update -y && sudo apt-get install -y rsync openssh-client
+      - name: Install Duet Connect
+        run: python3 -m pip install -e .
+      - name: Run tests
+        run: python3 -m pytest tests/ -v
+      - name: Lint
+        run: |
+          python3 -m pip install flake8 black
+          flake8 duetconnect tests || true
+          black --check duetconnect tests || true

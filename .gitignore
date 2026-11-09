@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.eggs/
+*.egg-info/
+dist/
+build/
+*.cfg.local
+.env
+# Personal data — not part of the project
+ACCOUNTS-REPORT.txt
+phone-apps.txt

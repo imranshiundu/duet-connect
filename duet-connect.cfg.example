@@ -1,0 +1,39 @@
+# Duet Connect configuration
+# Copy to ~/.config/duetconnect/duetconnect.cfg and edit for your machines.
+# Nothing here is hardcoded to a specific device; every value is overridable.
+
+[devices]
+# Nicknames used on the CLI (phone:, laptop:)
+phone_user = u0_a320
+phone_port = 8022
+laptop_user = imran
+laptop_port = 22
+# Local subnet for automatic discovery (CIDR). Leave empty to disable.
+discovery_network = 192.168.100.0/24
+
+[paths]
+# Phone-side shared storage root (Termux can see this after termux-setup-storage)
+phone_storage = /storage/emulated/0
+# Where backups land on the laptop (external drive mount point)
+backup_destination = /run/media/imran/GRAVITY/PhoneBackup
+# Comma-separated glob patterns excluded from backups/syncs
+exclude = Android/data/*,Android/obb/*,*.cache,*.tmp,*.thumbnails
+
+[ssh]
+# Directory holding Duet Connect-generated ed25519 keys
+key_dir = ~/.ssh/duetconnect
+# System known_hosts used for fingerprint validation
+known_hosts = ~/.ssh/known_hosts
+connect_timeout = 10
+command_timeout = 300
+
+[backup]
+# Folders backed up by `duetconnect backup` (selective mode)
+selective_folders = DCIM,Pictures,Movies,Music,Documents,Downloads
+verify_after_backup = true
+# How many dated backup generations to keep
+history_keep = 5
+
+[logging]
+level = INFO
+file = ~/.config/duetconnect/duetconnect.log
